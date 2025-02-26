@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="6.0.0" />
+    <PackageReference Include="Duende.IdentityServer" Version="7.1.0" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
     <PackageReference Include="Play.Common" Version="1.0.2" />
