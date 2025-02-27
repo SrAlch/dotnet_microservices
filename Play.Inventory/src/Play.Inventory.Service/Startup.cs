@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Play.Common.Identity;
 using Play.Common.MassTransit;
 using Play.Common.MongoDB;
 using Play.Inventory.Service.Clients;
@@ -32,7 +33,8 @@ namespace Play.Inventory.Service
             services.AddMongo()
                     .AddMongoRepository<InventoryItem>("inventoryitems")
                     .AddMongoRepository<CatalogItem>("catalogitems")
-                    .AddMassTransitWithRabbitMq();
+                    .AddMassTransitWithRabbitMq()
+                    .AddJwtBearerAuthentication();
 
             AddCatalogClient(services);
 
@@ -63,6 +65,8 @@ namespace Play.Inventory.Service
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
