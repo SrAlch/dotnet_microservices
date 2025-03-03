@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
+            "type": "pwa-node",
             "request": "launch",
             "name": "Server",
             "runtimeExecutable": "npm",
@@ -17,12 +17,11 @@
             ]
         },
         {
-            "type": "msedge",
+            "type": "pwa-msedge",
             "request": "launch",
             "name": "Client",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/src",
-            "runtimeExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+            "webRoot": "${workspaceFolder}/src"
         }
     ],
     "compounds": [

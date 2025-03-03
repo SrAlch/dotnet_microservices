@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { Col, Container, Row, Table, Button } from "react-bootstrap";
-import ItemModal from "./form/ItemModal";
-import GrantItemModal from "./form/GrantItemModal";
+import React, { Component } from 'react';
+import { Col, Container, Row, Table, Button } from 'react-bootstrap';
+import ItemModal from './form/ItemModal';
+import GrantItemModal from './form/GrantItemModal';
+import authService from './api-authorization/AuthorizeService'
 
 export class Catalog extends Component {
   static displayName = Catalog.name;
@@ -16,129 +17,119 @@ export class Catalog extends Component {
   }
 
   async populateItems() {
-    fetch(`${window.CATALOG_ITEMS_API_URL}`)
-      .then((response) => {
-        return response.json();
+    const token = await authService.getAccessToken();
+    fetch(`${window.CATALOG_ITEMS_API_URL}`, {
+      headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+    })
+      .then(response => { 
+        return response.json(); 
       })
-      .then((returnedItems) =>
-        this.setState({
-          items: returnedItems,
-          loading: false,
-          loadedSuccess: true,
-        })
-      )
-      .catch((err) => {
+      .then(returnedItems => this.setState({ items: returnedItems, loading: false, loadedSuccess: true }))
+      .catch(err => {
         console.log(err);
-        this.setState({ items: [], loading: false, loadedSuccess: false });
+        this.setState({ items: [], loading: false, loadedSuccess: false })
       });
   }
 
-  addItemToState = (item) => {
-    this.setState((previous) => ({
-      items: [...previous.items, item],
+  addItemToState = item => {
+    this.setState(previous => ({
+      items: [...previous.items, item]
     }));
-  };
+  }
   updateState = (id) => {
     this.populateItems();
-  };
-  deleteItemFromState = (id) => {
-    const updated = this.state.items.filter((item) => item.id !== id);
-    this.setState({ items: updated });
-  };
+  }
+  deleteItemFromState = id => {
+    const updated = this.state.items.filter(item => item.id !== id);
+    this.setState({ items: updated })
+  }
   async deleteItem(id) {
-    let confirmDeletion = window.confirm("Do you really wish to delete it?");
+    let confirmDeletion = window.confirm('Do you really wish to delete it?');
     if (confirmDeletion) {
+      const token = await authService.getAccessToken();
       fetch(`${window.CATALOG_ITEMS_API_URL}/${id}`, {
-        method: "delete",
+        method: 'delete',
         headers: {
-          "Content-Type": "application/json",
-        },
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       })
-        .then((res) => {
+        .then(res => {
           this.deleteItemFromState(id);
         })
-        .catch((err) => {
+        .catch(err => {          
           console.log(err);
-          window.alert("Could not delete the item.");
+          window.alert("Could not delete the item.");          
         });
     }
   }
 
   renderItemsTable(items) {
-    return (
-      <Container style={{ paddingTop: "10px", paddingLeft: "0px" }}>
-        <Row>
-          <Col>
-            <Table striped bordered hover>
-              <thead className="thead-dark">
+    return <Container style={{ paddingTop: "10px", paddingLeft: "0px" }}>
+      <Row>
+        <Col>
+          <Table striped bordered hover >
+            <thead className="thead-dark">
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th style={{ textAlign: "center" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!items || items.length <= 0 ?
                 <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Price</th>
-                  <th style={{ textAlign: "center" }}>Actions</th>
+                  <td colSpan="6" align="center"><b>No Items yet</b></td>
                 </tr>
-              </thead>
-              <tbody>
-                {!items || items.length <= 0 ? (
-                  <tr>
-                    <td colSpan="6" align="center">
-                      <b>No Items yet</b>
+                : items.map(item => (
+                  <tr key={item.id}>
+                    <td>
+                      {item.name}
+                    </td>
+                    <td>
+                      {item.description}
+                    </td>
+                    <td>
+                      {item.price}
+                    </td>
+                    <td align="center">
+                      <div>
+                        <ItemModal
+                          isNew={false}
+                          item={item}
+                          updateItemIntoState={this.updateState} />
+                    &nbsp;&nbsp;&nbsp;
+                    <GrantItemModal
+                          item={item} />
+                    &nbsp;&nbsp;&nbsp;                    
+                    <Button variant="danger" onClick={() => this.deleteItem(item.id)}>Delete</Button>
+                      </div>
                     </td>
                   </tr>
-                ) : (
-                  items.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.description}</td>
-                      <td>{item.price}</td>
-                      <td align="center">
-                        <div>
-                          <ItemModal
-                            isNew={false}
-                            item={item}
-                            updateItemIntoState={this.updateState}
-                          />
-                          &nbsp;&nbsp;&nbsp;
-                          <GrantItemModal item={item} />
-                          &nbsp;&nbsp;&nbsp;
-                          <Button
-                            variant="danger"
-                            onClick={() => this.deleteItem(item.id)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <ItemModal isNew={true} addItemToState={this.addItemToState} />
-          </Col>
-        </Row>
-      </Container>
-    );
+                ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ItemModal isNew={true} addItemToState={this.addItemToState} />
+        </Col>
+      </Row>
+    </Container>;
   }
 
   render() {
-    let contents = this.state.loading ? (
-      <p>
-        <em>Loading...</em>
-      </p>
-    ) : this.state.loadedSuccess ? (
-      this.renderItemsTable(this.state.items)
-    ) : (
-      <p>Could not load items</p>
-    );
+    let contents = this.state.loading
+      ? <p><em>Loading...</em></p>
+      : this.state.loadedSuccess
+        ? this.renderItemsTable(this.state.items)
+        : <p>Could not load items</p>;
 
     return (
       <div>
-        <h1 id="tabelLabel">Catalog Items</h1>
+        <h1 id="tabelLabel" >Catalog Items</h1>
         {contents}
       </div>
     );
