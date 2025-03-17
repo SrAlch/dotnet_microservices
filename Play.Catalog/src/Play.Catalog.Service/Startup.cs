@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Play.Catalog.Service;
 using Play.Catalog.Service.Entities;
 using Play.Common.Identity;
 using Play.Common.MassTransit;
@@ -46,7 +47,7 @@ namespace Play.Catalog.Service
                     policy.RequireClaim("scope", "catalog.readaccess", "catalog.fullaccess");
                 });
 
-                options.AddPolicy(Policies.Read, policy =>
+                options.AddPolicy(Policies.Write, policy =>
                 {
                     policy.RequireRole("Admin");
                     policy.RequireClaim("scope", "catalog.writeaccess", "catalog.fullaccess");

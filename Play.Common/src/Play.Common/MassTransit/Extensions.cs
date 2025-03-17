@@ -40,7 +40,7 @@ namespace Play.Common.MassTransit
                 configurator.Host(rabbitMQSettings.Host);
                 configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
 
-                if (configureRetries != null)
+                if (configureRetries == null)
                 {
                     configureRetries = (retryConfigurator) => retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
                 }

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="7.3.1" />
+    <PackageReference Include="massTransit.AspNetCore" Version="7.3.1" />
+    <PackageReference Include="massTransit.MongoDb" Version="7.3.1" />
+    <PackageReference Include="massTransit.rabbitMQ" Version="7.3.1" />
+    <PackageReference Include="Play.Catalog.Contracts" Version="1.0.1" />
+    <PackageReference Include="play.Common" Version="1.0.4" />
+    <PackageReference Include="Play.Inventory.Contracts" Version="1.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+</Project>

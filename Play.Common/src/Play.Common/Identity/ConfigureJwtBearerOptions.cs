@@ -28,7 +28,7 @@ namespace Play.Common.Identity
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
-                    RoleClaimType = "role",
+                    RoleClaimType = "role"
                 };
             }
         }
